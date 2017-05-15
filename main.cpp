@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
+#include <ctime>
 
 struct clause {
     int v1;
@@ -48,8 +49,19 @@ double coolingSchedule0(int iteration, int nIterations, double tInit, double tFi
     return tInit - ( iteration * ( (tInit - tFinal) / nIterations ) );
 }
 
+double coolingSchedule7(int iteration, int nIterations, double tInit, double tFinal)
+{
+    return  ((tInit - tFinal) / std::cosh( (10*iteration) / nIterations )) + tFinal;
+}
+
+double coolingSchedule5(int iteration, int nIterations, double tInit, double tFinal)
+{
+    return (0.5 * (tInit - tFinal)) * (1 + cos( (iteration * M_PI) / nIterations)) + tFinal;
+}
+
 int main(int argc, char *argv[])
 {
+    std::srand(std::time(0));
     int nVariables, nClauses;
     std::vector<clause> clauses;
 
@@ -97,16 +109,18 @@ int main(int argc, char *argv[])
     }
 
     int nIterations = 400000;
-    double init_temp = 50;
+    double init_temp = 300;
     double final_temp = 0;
     double temperature = init_temp;
-    double step = (init_temp - final_temp) / nIterations;
 
     for (int iteration = 0; iteration < nIterations; iteration++)
     {
         memcpy(next_cand, candidate, sizeof(bool) * nVariables);
         disturb(next_cand, nVariables);
-        int deltaE = energy(next_cand, clauses) - energy(candidate, clauses);
+        int energy_next = energy(next_cand, clauses);
+        int energy_cand = energy(candidate, clauses);
+        printf("%d %d\n", iteration, energy_cand);
+        int deltaE =  energy_next - energy_cand;
         if (deltaE > 0)
         {
             memcpy(candidate, next_cand, sizeof(bool) * nVariables);
@@ -114,10 +128,16 @@ int main(int argc, char *argv[])
         else
         {
             double probability = std::exp( deltaE / temperature );
-            printf("Probability: %lf Delta: %d", probability, deltaE);
+            probability *= 1000;
+            //printf("Probability: %lf Delta: %d Temperature: %lf\n", probability, deltaE, temperature);
             // do stuff
+            int r = std::rand() % 1000;
+            if ( r < probability )
+            {
+                memcpy(candidate, next_cand, sizeof(bool) * nVariables);
+            }
         }
-
-        temperature = coolingSchedule0(iteration, nIterations, init_temp, final_temp);
+        
+        temperature = coolingSchedule5(iteration, nIterations, init_temp, final_temp);
     }
 }
