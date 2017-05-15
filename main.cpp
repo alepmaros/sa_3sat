@@ -23,7 +23,23 @@ int energy(bool *variables, std::vector<clause> &clauses)
     std::vector<clause>::iterator it;
     for (it = clauses.begin(); it != clauses.end(); it++)
     {
-        if( variables[it->v1] || variables[it->v2] || variables[it->v3] )
+        bool x, y, z;
+        if ( it->v1 < 0 )
+            x = ! variables[-it->v1];
+        else
+            x = variables[it->v1];
+
+        if ( it->v2 < 0 )
+            y = ! variables[-it->v2];
+        else
+            y = variables[it->v2];
+
+        if ( it->v3 < 0 )
+            z = ! variables[-it->v3];
+        else
+            z = variables[it->v3];
+
+        if( x || y || z )
         {
             n++;
         }
@@ -109,7 +125,7 @@ int main(int argc, char *argv[])
     }
 
     int nIterations = 400000;
-    double init_temp = 300;
+    double init_temp = 4;
     double final_temp = 0;
     double temperature = init_temp;
 
