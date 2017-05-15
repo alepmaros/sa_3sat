@@ -15,7 +15,7 @@ struct clause {
     int v3;
 };
 
-// Returns how many clauses are tru
+// Returns how many clauses are true
 int energy(bool *variables, std::vector<clause> &clauses)
 {
     int n = 0;
@@ -41,6 +41,11 @@ int disturb(bool *variables, int nVariables)
             variables[i] = !variables[i];
         }
     }
+}
+
+double coolingSchedule0(int iteration, int nIterations, double tInit, double tFinal)
+{
+    return tInit - ( iteration * ( (tInit - tFinal) / nIterations ) );
 }
 
 int main(int argc, char *argv[])
@@ -71,12 +76,12 @@ int main(int argc, char *argv[])
     getline(infile, line);
     sscanf(line.c_str(), "%*s %*s %d %d", &nVariables, &nClauses);
 
-    bool *variables;
-    variables = (bool*) malloc(sizeof(bool) * nVariables);
-    memset(variables, 0, sizeof(bool) * nVariables);
+    bool *candidate, *next_cand;
+    candidate = (bool*) malloc(sizeof(bool) * nVariables);
+    next_cand = (bool*) malloc(sizeof(bool) * nVariables);
+    memset(candidate, 0, sizeof(bool) * nVariables);
+    memset(next_cand, 0, sizeof(bool) * nVariables);
 
-    printf("a: %d %d\n\n", nVariables, nClauses);
-    
     for(int i = 0; i < nClauses; i++)
     {
         getline(infile, line);
@@ -85,4 +90,34 @@ int main(int argc, char *argv[])
         clauses.push_back(c);
     }
 
+    // Generating Random Initial "solution"
+    for (int i = 0; i < nVariables; i++)
+    {
+        candidate[i] = std::rand() % 2;
+    }
+
+    int nIterations = 400000;
+    double init_temp = 50;
+    double final_temp = 0;
+    double temperature = init_temp;
+    double step = (init_temp - final_temp) / nIterations;
+
+    for (int iteration = 0; iteration < nIterations; iteration++)
+    {
+        memcpy(next_cand, candidate, sizeof(bool) * nVariables);
+        disturb(next_cand, nVariables);
+        int deltaE = energy(next_cand, clauses) - energy(candidate, clauses);
+        if (deltaE > 0)
+        {
+            memcpy(candidate, next_cand, sizeof(bool) * nVariables);
+        }
+        else
+        {
+            double probability = std::exp( deltaE / temperature );
+            printf("Probability: %lf Delta: %d", probability, deltaE);
+            // do stuff
+        }
+
+        temperature = coolingSchedule0(iteration, nIterations, init_temp, final_temp);
+    }
 }
