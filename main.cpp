@@ -49,7 +49,7 @@ int energy(bool *variables, std::vector<clause> &clauses)
 
 int disturb(bool *variables, int nVariables)
 {
-    int percentage = 20;
+    int percentage = 10;
     for (int i = 0; i < nVariables; i++)
     {
         int p = (std::rand() % 100) + 1;
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     }
 
     int nIterations = 400000;
-    double init_temp = 4;
+    double init_temp = 8;
     double final_temp = 0;
     double temperature = init_temp;
 
