@@ -39,7 +39,9 @@
 %\end{abstract}
      
 \begin{resumo} 
-    a
+    Este artigo apresentará o conceito de algoritmos de melhorias iterativas e estudará
+    o comportamento do algoritmo \textit{Simualated Annealing} sobre o problema 3-CNF-SAT,
+    comparando-o com um algoritmo de busca aleatória.
 \end{resumo}
 
 % 1. Introdução
@@ -114,20 +116,72 @@ e cláusulas.
 
 % 3. Modelo implementado
 %   Estratégias utilizadas, fórmulas, definições de implementação, linguagem
-\section{Modelo implementado, experimentos e análises}
+\section{Modelo implementado}
 
 Para resolver a problemática proposta, o algoritmo de \textit{\textbf{Simulated Annealing}} será
-utilizado. Como comentado na introdução do algoritmo a algumas informações necessárias
+utilizado. Como comentado na introdução do algoritmo, ha algumas informações necessárias
 a serem definidas: a temperatura inicial e final, como o resfriamento ocorre, como a perturbação
 da solução é feita e qual a condição de parada.
 
 \subsection{Temperatura}
 
+A temperatura é uma variável que deve ser definida através de experimentações. As
+temperaturas que foram definidas após alguns casos de teste foram as seguintes:
+
+\begin{itemize}
+    \item Temperatura Inicial: 5
+    \item Temperature Final: 0
+\end{itemize}
+
 \subsection{Resfriamento}
+
+A função de resfriamento escolhida foi proposta por Brian T. Luke\footnote{Disponível em: http://www.btluke.com/simanf1.html}
+e é descrita pela seguinte equação:
+
+\begin{equation}
+    T_i = \dfrac{1}{2} (T_0 - T_N) (1 + \mathlarger{cos(}\dfrac{i \pi}{N}\mathlarger{)}) + T_n,
+\end{equation}
+
+onde $T_i$ é a tempretura na iteração $i$, $T_0$ é a temperatura inicial, $T_N$ a
+temperatura final, $i$ a iteração e $N$ a quantidade máxima de iterações.
+Assumindo as temperaturas definidas anterioramente e 500 mil iterações, pode-se observar
+como o decaimento se comporta na Figura~\ref{fig:temp}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/temperatura}
+    \caption{Função de Resfriamento}
+    \label{fig:temp}
+\end{figure}
 
 \subsection{Perturbação e condição de aceitação}
 
+Para buscar uma melhor solução que a atual é necessário realizar uma perturbação.
+Neste trabalha a função de perturbação percorre o vetor das variáveis lógicas e para
+cada variável ele faz um \textit{bitflip} com uma chance de 5\%. Dada essa nova solução
+ele checa se a solução perturbada é melhor que a atual, caso seja ele aceita a nova
+solução automaticamente, caso contrário ele aceita a nova solução com a seguinte probabilidade:
+
+\begin{equation}
+    \mathlarger{p = e}^{\dfrac{\Delta E}{t_i}},
+\end{equation}
+
+onde $p$ é a probabilidade de aceitação $\Delta E$ a diferença entre a energia (quantidade
+de cláusulas marcadas como verdadeiras) da próxima solução menos a energia da solução atual, e
+$t_i$ a temperatura atual.
+
 \subsection{Condição de parada}
+
+A condição de parada está atrelada a quantidade de iterações que o sistema irá executar.
+Neste trabalho foram especificadas 500 mil iterações.
+
+\section{Experimentos e análises}
+
+Para haver uma comparação a problemática aqui descrita também foi executada sobre um
+algoritmo de busca aleatória. Como o nome diz, a cada iteração o algoritmo gera uma
+solução aleatória, caso seja melhor que a anterior ele aceita, do contrário, rejeita. 
+A Tabela~\ref{tab:tab1} mostra os resultados de ambos os algoritmo após 500 mil iterações
+e 10 execuções.
 
 \begin{table}[h]
     \centering
@@ -135,7 +189,7 @@ da solução é feita e qual a condição de parada.
         \toprule
         \multirow{2}{*}{Instância} &
             \multicolumn{2}{c}{Simulated Annealing} &
-            \multicolumn{2}{c}{Random Search} \\
+            \multicolumn{2}{c}{Busca Aleatória} \\
             & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
             \midrule
         uf20-01 & 91 & 0 & 90 & 0 \\
@@ -146,37 +200,68 @@ da solução é feita e qual a condição de parada.
   \caption{Resultados obtidos}\label{tab:tab1}
 \end{table}
 
+Como nota-se na tabela, o algoritmo de Simulated Annealing atingiu um resultado
+melhor nas três instancias. As Figuras~\ref{fig:uf20},~\ref{fig:uf100}~e~\ref{fig:uf250}
+mostram a média das soluções das 10 execuções a cada iteração.
 
-\begin{table}[h]
+\begin{figure}[h]
     \centering
-    \begin{tabular}{lSSSSSS}
-        \toprule
-        \multirow{2}{*}{Instância} &
-            \multicolumn{2}{c}{Simulated Annealing} &
-            \multicolumn{2}{c}{Random Search} \\
-            & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
-            \midrule
-        uf20-01 & 91 & 0 & 90 & 0 \\
-        uf100-01 & 430 & 0 & 402.7 & 1.828 \\
-        uf250-01 & 1064.3 & 1.059 & 978.5 & 1.433 \\
-        \bottomrule
-  \end{tabular}
-  \caption{Resultados obtidos}\label{tab:tab1}
-\end{table}
+    \includegraphics[width=1\textwidth]{figuras/20_t5_cs5}
+    \caption{Instância uf20-01}
+    \label{fig:uf20}
+\end{figure}
 
-%\begin{figure}[h]
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/100_t5_cs5}
+    \caption{Instância uf100-01}
+    \label{fig:uf100}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/250_t5_cs5}
+    \caption{Instância uf250-01}
+    \label{fig:uf250}
+\end{figure}
+
+Os gráficos demonstram como a temperatura afeta a convergência do problema. No inicio,
+quando a temperatura ainda é alta, temos um comportamento parecido com o da busca
+aleatória. Conforme a temperatura vai decaindo, a busca começa a ser mais localizada,
+aceitando soluções com menos variações que a atual. No final, o algoritmo passa a
+aceitar somente resultados melhores que o atual, imitando uma busca gulosa.
+
+\clearpage
+
+%\begin{table}[h]
     %\centering
-    %\includegraphics[width=1\textwidth]{figuras/plot1}
-    %\caption{Gráficos dos Testes}
-    %\label{fig:plot1}
-%\end{figure}
-
+    %\begin{tabular}{lSSSSSS}
+        %\toprule
+        %\multirow{2}{*}{Instância} &
+            %\multicolumn{2}{c}{Simulated Annealing} &
+            %\multicolumn{2}{c}{Random Search} \\
+            %& {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
+            %\midrule
+        %uf20-01 & 91 & 0 & 90 & 0 \\
+        %uf100-01 & 430 & 0 & 402.7 & 1.828 \\
+        %uf250-01 & 1064.3 & 1.059 & 978.5 & 1.433 \\
+        %\bottomrule
+  %\end{tabular}
+  %\caption{Resultados obtidos}\label{tab:tab1}
+%\end{table}
 
 % 5. Conclusão
 %   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
 \section{Conclusão}
 
-conclu
+O algoritmo de \textit{\textbf{Simulated Annealing}} provou ser mais eficiente que o
+da busca aleatória. O comportamento de convergência é uma interessante propriedade que
+pode ser utilizada por diversos problemas de otimização.
+
+Como trabalho futuro, resta estudar a mudança de comportamento que diferentes
+funções de esfriamento tem, melhor identificar as temperaturas inciais e finais
+e comparar o algoritmo estudado com outros algoritmos de otimização, como os algoritmos
+genéticos.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
