@@ -17,10 +17,11 @@
 \usepackage{multirow}
 \usepackage{siunitx}
 \usepackage[export]{adjustbox}
+\usepackage[portuguese,noend,ruled]{algorithm2e}
 
 \sloppy
 
-\title{IAR0001 - 2017/1\\Relatório Trabalho 4\\Simulated Annealing}
+\title{IAR0001 - 2017/1\\Relatório Trabalho 4\\3-CNF-SAT com Simulated Annealing}
 
 \author{Alexandre Maros\inst{1} }
 
@@ -45,25 +46,94 @@
 %   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
 \section{Introdução}
 
-a
+Uma das formas de se encontrar uma solução para um problema é utilizando o algoritmos
+de melhorias iterativas. A ideia principal é começar com um estado inicial, que é uma
+solução completa do problema, e melhorá-lo iterativamente no decorrer do algoritmo.
+Problemas que podem ser resolvidos com essa técnica geralmente são classificados
+como problemas de otimização.
+
+Um exemplo de melhoria iterativa é o algoritmo de \textbf{\textit{Hill-Climbing}}, ou
+Subida da Encosta. Esse algoritmo pode ser resumido em um \textit{loop} que fica se movendo
+na direção que está crescendo. Em outras palavras, é um \textit{loop} que gera uma solução
+perturbando a solução atual e verifica se aquela solução é melhor que a atual, caso contrário
+esta solução é descartada e outra é gerada.
+
+Essa abordam apresenta alguns problemas. O principal são os máximos locais. O algoritmo
+pode atingir um máximo local e achar que é a melhor solução, deixando de encontrar o
+máximo global. Outro problema são os platôs, onde o algoritmo pode achar que chegou em
+uma solução que não pode ser melhorada e retornar a solução atual.
+
+Uma outra abordagem para os problemas de otimização é o algoritmo de \textit{\textbf{Simulated Annealing}},
+uma técnica que veio a partir de observações do cozimento de vidros e metais da metalurgia
+e combina buscas globais com buscas locais.
+
+Para modificar a forma de um metal, ele primeiro é aquecido a uma altíssima temperatura.
+Quanto maior sua temperatura, mais maleável ele se torna, podendo assumir diversas formas. Conforme
+a temperatura diminui, ele se torna mais resistente as mudanças.
+No \textit{\textbf{Simulated Annealing}} a ideia é a mesma. O algoritmo começa com
+uma variável de temperatura. Quando essa temperatura está alta, soluções piores são
+mais suscetíveis a serem aceitas (o algoritmo pode estar em um máximo local, logo
+buscar outros lugares se torna interessante). Quanto menor a temperatura, menos chances
+tem de uma solução pior ser aceita. A variação da temperatura pode ser controlada a partir
+de uma função de mapeamento, que toma como parâmetro as iterações desejáveis do
+algoritmo \cite{Russell:2009:AIM:1671238}.
 
 % 2. Problemática
 %   Detalhamento do problema, PEAS e características do problema
 \section{Problemática}
 
-b
+O problema a ser resolvido aqui é o SAT, ou Problema de Satisfabilidade Booleana,
+mais especificamente o problema 3-CNF-SAT.
+
+O Problema de Satisfabilidade Booleana consiste em buscar uma determinada interpretação
+lógica capaz de satisfazer um conjunto de proposições booleanas. A forma normal
+conjuntiva (\textit{Conjunctive Normal Form}, CNF) é uma conjunção de cláusulas onde
+cada cláusula é uma disjunção de literais. Em outras palavras, é um aglomerado de cláusulas
+ligadas pelo operador lógico \textit{and} ($\land$) onde cada cláusula tem literais ligados
+pelo operador \textit{or} ($\lor$). O ``3'' quer dizer que cada cláusula deve ter exatamente
+3 literais, como por exemplo: $(x_1 \lor \neg x_2 \lor x_3) \land (\neg x_1 \lor x_4 \lor x_5)$.
+
+Os problemas foram retirados do \textit{SATLIB -- Benchmark Problems} da \textit{University
+of British Columbia}\footnote{Disponível em: http://www.cs.ubc.ca/~hoos/SATLIB/benchm.html}.
+A Tabela~\ref{tab:prob} mostra as instância utilizadas nos testes junto com a quantidade de variáveis
+e cláusulas.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lll}
+        \toprule
+        \text{Instância} & \text{Número de Variáveis} & \text{Número de Cláusulas} \\
+        \midrule
+        uf20-01 & 20 & 91 \\
+        uf100-01 & 100 & 430 \\
+        uf250-01 & 250 & 1065 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Instâncias utilizadas}\label{tab:prob}
+\end{table}
 
 % 3. Modelo implementado
 %   Estratégias utilizadas, fórmulas, definições de implementação, linguagem
 \section{Modelo implementado, experimentos e análises}
 
+Para resolver a problemática proposta, o algoritmo de \textit{\textbf{Simulated Annealing}} será
+utilizado. Como comentado na introdução do algoritmo a algumas informações necessárias
+a serem definidas: a temperatura inicial e final, como o resfriamento ocorre, como a perturbação
+da solução é feita e qual a condição de parada.
+
+\subsection{Temperatura}
+
+\subsection{Resfriamento}
+
+\subsection{Perturbação e condição de aceitação}
+
+\subsection{Condição de parada}
 
 \begin{table}[h]
-    \caption{Resultados obtidos}\label{tab:tab1}
     \centering
     \begin{tabular}{lSSSSSS}
         \toprule
-        \multirow{2}{*}{Busca} &
+        \multirow{2}{*}{Instância} &
             \multicolumn{2}{c}{Simulated Annealing} &
             \multicolumn{2}{c}{Random Search} \\
             & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
@@ -73,15 +143,15 @@ b
         uf250-01 & 1036.5 & 3.027 & 978.5 & 1.433 \\
         \bottomrule
   \end{tabular}
+  \caption{Resultados obtidos}\label{tab:tab1}
 \end{table}
 
 
 \begin{table}[h]
-    \caption{Resultados obtidos}\label{tab:tab1}
     \centering
     \begin{tabular}{lSSSSSS}
         \toprule
-        \multirow{2}{*}{Busca} &
+        \multirow{2}{*}{Instância} &
             \multicolumn{2}{c}{Simulated Annealing} &
             \multicolumn{2}{c}{Random Search} \\
             & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
@@ -91,6 +161,7 @@ b
         uf250-01 & 1064.3 & 1.059 & 978.5 & 1.433 \\
         \bottomrule
   \end{tabular}
+  \caption{Resultados obtidos}\label{tab:tab1}
 \end{table}
 
 %\begin{figure}[h]
