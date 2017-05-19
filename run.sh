@@ -1,8 +1,9 @@
 #!/bin/bash
 
-g++ main.cpp -o main
+g++ sa.cpp -o sa -O2
 
 for i in `seq 1 10`;
 do
-    ./main tests/uf100-01.cnf > tests/runs/teste$i.txt
+    ./sa inputs/uf250-01.cnf > tests/runs/teste$i.txt
+    echo $i
 done

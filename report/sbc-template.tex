@@ -1,0 +1,113 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+
+
+%\usepackage[latin1]{inputenc}  
+%\usepackage[utf8]{inputenc}  
+
+\usepackage{graphicx,url}
+\usepackage[brazil]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{float}
+
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage[export]{adjustbox}
+
+\sloppy
+
+\title{IAR0001 - 2017/1\\Relatório Trabalho 4\\Simulated Annealing}
+
+\author{Alexandre Maros\inst{1} }
+
+\address{Departamento de Ciência da Computação -- Universidade do Estado de Santa Catarina\\
+  Centro de Ciências Tecnológicas -- Joinville -- SC -- Brasil
+  \email{alehstk@gmail.com}
+}
+
+\begin{document} 
+
+\maketitle
+
+%\begin{abstract}
+    %Abstract
+%\end{abstract}
+     
+\begin{resumo} 
+    a
+\end{resumo}
+
+% 1. Introdução
+%   Contextualização do problema, justificativa, objetivos, estrutura do relatório.
+\section{Introdução}
+
+a
+
+% 2. Problemática
+%   Detalhamento do problema, PEAS e características do problema
+\section{Problemática}
+
+b
+
+% 3. Modelo implementado
+%   Estratégias utilizadas, fórmulas, definições de implementação, linguagem
+\section{Modelo implementado, experimentos e análises}
+
+
+\begin{table}[h]
+    \caption{Resultados obtidos}\label{tab:tab1}
+    \centering
+    \begin{tabular}{lSSSSSS}
+        \toprule
+        \multirow{2}{*}{Busca} &
+            \multicolumn{2}{c}{Simulated Annealing} &
+            \multicolumn{2}{c}{Random Search} \\
+            & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
+            \midrule
+        uf20-01 & 91 & 0 & 90 & 0 \\
+        uf100-01 & 427.9 & 0.567 & 402.7 & 1.828 \\
+        uf250-01 & 1036.5 & 3.027 & 978.5 & 1.433 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+
+\begin{table}[h]
+    \caption{Resultados obtidos}\label{tab:tab1}
+    \centering
+    \begin{tabular}{lSSSSSS}
+        \toprule
+        \multirow{2}{*}{Busca} &
+            \multicolumn{2}{c}{Simulated Annealing} &
+            \multicolumn{2}{c}{Random Search} \\
+            & {$\bar{x}$} & {$\sigma$} & {$\bar{x}$} & {$\sigma$} \\
+            \midrule
+        uf20-01 & 91 & 0 & 90 & 0 \\
+        uf100-01 & 430 & 0 & 402.7 & 1.828 \\
+        uf250-01 & 1064.3 & 1.059 & 978.5 & 1.433 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+%\begin{figure}[h]
+    %\centering
+    %\includegraphics[width=1\textwidth]{figuras/plot1}
+    %\caption{Gráficos dos Testes}
+    %\label{fig:plot1}
+%\end{figure}
+
+
+% 5. Conclusão
+%   Considerações sobre o trabalho e sobre os resultados obtidos, trabalhos futuros.
+\section{Conclusão}
+
+conclu
+
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+
+\end{document}

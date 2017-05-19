@@ -1,5 +1,15 @@
 *.swp
 main
+sa
+rs
 
 tests/runs/*
 .Rhistory
+
+
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+

@@ -1,3 +1,8 @@
+/*
+ * RANDOM SEARCH 3-SAT
+ *
+ */
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -16,40 +21,9 @@ struct clause {
     int v3;
 };
 
-// Returns how many clauses are true
-int energy(bool *variables, std::vector<clause> &clauses)
-{
-    int n = 0;
-    std::vector<clause>::iterator it;
-    for (it = clauses.begin(); it != clauses.end(); it++)
-    {
-        bool x, y, z;
-        if ( it->v1 < 0 )
-            x = ! variables[-it->v1];
-        else
-            x = variables[it->v1];
-
-        if ( it->v2 < 0 )
-            y = ! variables[-it->v2];
-        else
-            y = variables[it->v2];
-
-        if ( it->v3 < 0 )
-            z = ! variables[-it->v3];
-        else
-            z = variables[it->v3];
-
-        if( x || y || z )
-        {
-            n++;
-        }
-    }
-    return n;
-}
-
 int disturb(bool *variables, int nVariables)
 {
-    int percentage = 10;
+    int percentage = 50;
     for (int i = 0; i < nVariables; i++)
     {
         int p = (std::rand() % 100) + 1;
@@ -60,19 +34,35 @@ int disturb(bool *variables, int nVariables)
     }
 }
 
-double coolingSchedule0(int iteration, int nIterations, double tInit, double tFinal)
+// Returns how many clauses are true
+int energy(bool *variables, std::vector<clause> &clauses)
 {
-    return tInit - ( iteration * ( (tInit - tFinal) / nIterations ) );
-}
+    int n = 0;
+    std::vector<clause>::iterator it;
+    for (it = clauses.begin(); it != clauses.end(); it++)
+    {
+        bool x, y, z;
+        if ( it->v1 < 0 )
+            x = !variables[(-it->v1) - 1];
+        else
+            x = variables[it->v1 - 1];
 
-double coolingSchedule7(int iteration, int nIterations, double tInit, double tFinal)
-{
-    return  ((tInit - tFinal) / std::cosh( (10*iteration) / nIterations )) + tFinal;
-}
+        if ( it->v2 < 0 )
+            y = !variables[(-it->v2) - 1];
+        else
+            y = variables[it->v2 - 1];
 
-double coolingSchedule5(int iteration, int nIterations, double tInit, double tFinal)
-{
-    return (0.5 * (tInit - tFinal)) * (1 + cos( (iteration * M_PI) / nIterations)) + tFinal;
+        if ( it->v3 < 0 )
+            z = !variables[(-it->v3) - 1];
+        else
+            z = variables[it->v3 - 1];
+
+        if( x || y || z )
+        {
+            n++;
+        }
+    }
+    return n;
 }
 
 int main(int argc, char *argv[])
@@ -104,11 +94,13 @@ int main(int argc, char *argv[])
     getline(infile, line);
     sscanf(line.c_str(), "%*s %*s %d %d", &nVariables, &nClauses);
 
-    bool *candidate, *next_cand;
+    bool *candidate, *next_cand, *best_cand;
     candidate = (bool*) malloc(sizeof(bool) * nVariables);
     next_cand = (bool*) malloc(sizeof(bool) * nVariables);
+    best_cand = (bool*) malloc(sizeof(bool) * nVariables);
     memset(candidate, 0, sizeof(bool) * nVariables);
     memset(next_cand, 0, sizeof(bool) * nVariables);
+    memset(best_cand, 0, sizeof(bool) * nVariables);
 
     for(int i = 0; i < nClauses; i++)
     {
@@ -122,38 +114,30 @@ int main(int argc, char *argv[])
     for (int i = 0; i < nVariables; i++)
     {
         candidate[i] = std::rand() % 2;
+        best_cand[i] = candidate[i];
     }
 
-    int nIterations = 400000;
+    int nIterations = 500000;
     double init_temp = 8;
     double final_temp = 0;
     double temperature = init_temp;
 
+    int energy_best = energy(best_cand, clauses);
     for (int iteration = 0; iteration < nIterations; iteration++)
     {
         memcpy(next_cand, candidate, sizeof(bool) * nVariables);
         disturb(next_cand, nVariables);
         int energy_next = energy(next_cand, clauses);
         int energy_cand = energy(candidate, clauses);
-        printf("%d %d\n", iteration, energy_cand);
-        int deltaE =  energy_next - energy_cand;
-        if (deltaE > 0)
+        if (energy_next - energy_cand > 0)
         {
             memcpy(candidate, next_cand, sizeof(bool) * nVariables);
-        }
-        else
-        {
-            double probability = std::exp( deltaE / temperature );
-            probability *= 1000;
-            //printf("Probability: %lf Delta: %d Temperature: %lf\n", probability, deltaE, temperature);
-            // do stuff
-            int r = std::rand() % 1000;
-            if ( r < probability )
+            if (energy_cand - energy_best > 0)
             {
-                memcpy(candidate, next_cand, sizeof(bool) * nVariables);
+                energy_best = energy_cand;
+                memcpy(best_cand, next_cand, sizeof(bool) * nVariables);
             }
         }
-        
-        temperature = coolingSchedule5(iteration, nIterations, init_temp, final_temp);
+        printf("%d %d\n",iteration, energy_best);
     }
 }
